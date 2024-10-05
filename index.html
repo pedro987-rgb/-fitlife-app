@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitLife - Tu App de Fitness y Dieta</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+            padding: 20px;
+        }
+        header {
+            background: #50b3a2;
+            color: white;
+            padding-top: 30px;
+            min-height: 70px;
+            border-bottom: #e8491d 3px solid;
+        }
+        header h1 {
+            margin: 0;
+            text-align: center;
+            padding-bottom: 10px;
+        }
+        .main-nav {
+            display: flex;
+            justify-content: space-around;
+            background-color: #333;
+            padding: 10px 0;
+        }
+        .main-nav a {
+            color: white;
+            text-decoration: none;
+            padding: 5px 10px;
+        }
+        .main-nav a:hover {
+            background-color: #e8491d;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .btn {
+            display: inline-block;
+            background: #50b3a2;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+        .btn:hover {
+            background: #3a8279;
+        }
+        #workout-plan, #meal-plan {
+            display: none;
+        }
+        #bmi-result {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>FitLife</h1>
+        </div>
+    </header>
+
+    <nav class="main-nav">
+        <a href="#" id="home-link">Inicio</a>
+        <a href="#" id="workout-link">Plan de Ejercicios</a>
+        <a href="#" id="meal-link">Plan de Comidas</a>
+    </nav>
+
+    <div class="container">
+        <section id="home" class="card">
+            <h2>Bienvenido a FitLife</h2>
+            <p>Calcula tu IMC para comenzar tu viaje de fitness:</p>
+            <input type="number" id="weight" placeholder="Peso (kg)" required>
+            <input type="number" id="height" placeholder="Altura (cm)" required>
+            <button class="btn" id="calculate-bmi">Calcular IMC</button>
+            <div id="bmi-result"></div>
+        </section>
+
+        <section id="workout-plan" class="card">
+            <h2>Plan de Ejercicios</h2>
+            <p>Aquí está tu plan de ejercicios personalizado:</p>
+            <ul id="workout-list"></ul>
+        </section>
+
+        <section id="meal-plan" class="card">
+            <h2>Plan de Comidas</h2>
+            <p>Aquí está tu plan de comidas saludable:</p>
+            <ul id="meal-list"></ul>
+        </section>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const homeLink = document.getElementById('home-link');
+            const workoutLink = document.getElementById('workout-link');
+            const mealLink = document.getElementById('meal-link');
+            const calculateButton = document.getElementById('calculate-bmi');
+
+            function showSection(sectionId) {
+                document.getElementById('home').style.display = 'none';
+                document.getElementById('workout-plan').style.display = 'none';
+                document.getElementById('meal-plan').style.display = 'none';
+                document.getElementById(sectionId).style.display = 'block';
+            }
+
+            homeLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                showSection('home');
+            });
+
+            workoutLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                showSection('workout-plan');
+            });
+
+            mealLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                showSection('meal-plan');
+            });
+
+            calculateButton.addEventListener('click', calculateBMI);
+
+            function calculateBMI() {
+                const weight = document.getElementById('weight').value;
+                const height = document.getElementById('height').value / 100; // convert cm to m
+                if (!weight || !height) {
+                    alert("Por favor, ingresa tu peso y altura.");
+                    return;
+                }
+                const bmi = (weight / (height * height)).toFixed(1);
+                let result = `Tu IMC es ${bmi}. `;
+                if (bmi < 18.5) {
+                    result += "Estás bajo peso.";
+                } else if (bmi < 25) {
+                    result += "Tienes un peso saludable.";
+                } else if (bmi < 30) {
+                    result += "Tienes sobrepeso.";
+                } else {
+                    result += "Tienes obesidad.";
+                }
+                document.getElementById('bmi-result').innerHTML = result;
+                generateWorkoutPlan(bmi);
+                generateMealPlan(bmi);
+                
+                // Mostrar las secciones de plan de ejercicios y comidas
+                document.getElementById('workout-plan').style.display = 'block';
+                document.getElementById('meal-plan').style.display = 'block';
+            }
+
+            function generateWorkoutPlan(bmi) {
+                const workouts = [
+                    "30 minutos de caminata rápida",
+                    "20 minutos de yoga",
+                    "15 minutos de entrenamiento de fuerza",
+                    "25 minutos de natación",
+                    "40 minutos de ciclismo"
+                ];
+                const plan = workouts.sort(() => 0.5 - Math.random()).slice(0, 3);
+                const workoutList = document.getElementById('workout-list');
+                workoutList.innerHTML = plan.map(workout => `<li>${workout}</li>`).join('');
+            }
+
+            function generateMealPlan(bmi) {
+                const meals = [
+                    "Avena con frutas y nueces",
+                    "Ensalada de pollo y aguacate",
+                    "Salmón a la parrilla con vegetales",
+                    "Batido de proteínas y plátano",
+                    "Huevos revueltos con espinacas"
+                ];
+                const plan = meals.sort(() => 0.5 - Math.random()).slice(0, 3);
+                const mealList = document.getElementById('meal-list');
+                mealList.innerHTML = plan.map(meal => `<li>${meal}</li>`).join('');
+            }
+
+            // Mostrar la sección de inicio por defecto
+            showSection('home');
+        });
+    </script>
+</body>
+</html>
